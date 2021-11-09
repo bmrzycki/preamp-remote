@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Preamp</title>
+    <link rel="stylesheet" href="style.css" />
+    <meta name="viewport"
+          content="width=device-width,
+                   initial-scale=1.0,
+                   minimum-scale=1,
+                   maximum-scale=1,
+                   user-scalable=no" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="Preamp" />
+    <link rel="apple-touch-icon" href="/apple/icon-500.png" />
+  </head>
+
+  <body>
+    <div id="mybar" class="bar">
+      <button class="btn_tab" id="btn_tab.main"
+	      onclick="tabOpen();">Main</button>
+      <button class="btn_tab" id="btn_tab.trim"
+	      onclick="tabOpen();">Trim</button>
+      <button class="btn_tab" id="btn_tab.remote"
+	      onclick="tabOpen();">Remote</button>
+      <button class="btn_tab" id="btn_tab.info"
+	      onclick="tabOpen();">Info</button>
+    </div>
+    <br />
+
+    <!-- ==[ MAIN ]======================================================== -->
+    <div id="tab.main" class="tab_view" style="display:none">
+      <button class="btn" id="irc.standby" onclick="cmd();">Standby</button>
+      <br /><br />
+      <button class="btn" id="input.1" onclick="cmd();">TV</button>
+      <button class="btn" id="input.2" onclick="cmd();">BT</button>
+      <button class="btn" id="input.3" onclick="cmd();">HTPC</button>
+      <br />
+      <button class="btn" id="irc.info" onclick="cmd();">Info</button>
+      <button class="btn" id="config.1" onclick="cmd();">5.1</button>
+      <button class="btn" id="config.2" onclick="cmd();">2.0</button>
+      <br /><br />
+      <button class="btn" id="irc.volume-" onclick="cmd();">Vol -</button>
+      <button class="btn" id="irc.volume+" onclick="cmd();">Vol +</button>
+      <button class="btn" id="irc.mute" onclick="cmd();">Mute</button>
+      <br />
+      <button class="pad">Mode</button>
+      <select class="pd" id="pd.mode" onchange="cmd();">
+	<option value="0">Mono</option>
+	<option value="1">Stereo</option>
+	<option value="2">Party</option>
+	<option value="3">Mono Plus</option>
+	<option value="4">Movie Plus</option>
+	<option value="5">Music Plus</option>
+	<option value="14">Discrete</option>
+	<option value="6">Pro Logic</option>
+	<option value="7">PLIIx Music</option>
+	<option value="8">PLIIx Movie</option>
+	<option value="9">PLIIx Matrix</option>
+	<option value="10">PLIIx Game</option>
+	<option value="17">Digital EX</option>
+	<option value="11">Neo:6</option>
+	<option value="12">Neo:6 Cinema</option>
+	<option value="13">Neo:6 Music</option>
+	<option value="15">Neo:6 Cinema ES</option>
+	<option value="16">Neo:6 Music ES</option>
+      </select>
+    </div>
+
+    <!-- ==[ TRIM ]======================================================== -->
+    <div id="tab.trim" class="tab_view" style="display:none">
+      <button class="btn" id="cmd.trm0" onclick="cmd();">Trim 0</button>
+      <button class="btn" id="cmd.eqoff" onclick="cmd();">EQ Off</button>
+      <button class="btn" id="cmd.eqon" onclick="cmd();">EQ On</button>
+      <br /><br />
+      <button class="btn" id="cmd.ball" onclick="cmd();">← Bal</button>
+      <button class="btn" id="cmd.balc" onclick="cmd();">Bal 0</button>
+      <button class="btn" id="cmd.balr" onclick="cmd();">Bal →</button>
+      <br />
+      <button class="btn" id="cmd.lsy-" onclick="cmd();">← Lip</button>
+      <button class="btn" id="cmd.lsy0" onclick="cmd();">Lip 0</button>
+      <button class="btn" id="cmd.lsy+" onclick="cmd();">Lip →</button>
+      <br /><br />
+      <button class="btn" id="cmd.cnt+" onclick="cmd();">Cent ▲</button>
+      <button class="btn" id="cmd.srn+" onclick="cmd();">Surr ▲</button>
+      <button class="btn" id="cmd.sub+" onclick="cmd();">Sub ▲</button>
+      <br />
+      <button class="btn" id="cmd.cnt-" onclick="cmd();">Cent ▼</button>
+      <button class="btn" id="cmd.srn-" onclick="cmd();">Surr ▼</button>
+      <button class="btn" id="cmd.sub-" onclick="cmd();">Sub ▼</button>
+    </div>
+
+    <!-- ==[ REMOTE ]====================================================== -->
+    <div id="tab.remote" class="tab_view" style="display:none">
+      <button class="btn" id="irc.info" onclick="cmd();">Info</button>
+      <button class="btn" id="irc.display" onclick="cmd();">Display</button>
+      <button class="btn" id="irc.standby" onclick="cmd();">Standby</button>
+      <br />
+      <button class="btn" id="irc.lipsync" onclick="cmd();">Lipsync</button>
+      <button class="btn" id="irc.night" onclick="cmd();">Night</button>
+      <button class="btn" id="irc.mode" onclick="cmd();">Mode</button>
+      <br /><br />
+      <button class="btn" id="cmd.minp+" onclick="cmd();">Input ▲</button>
+      <button class="pad"></button>
+      <button class="btn" id="irc.volume+" onclick="cmd();">Vol ▲</button>
+      <br />
+      <button class="btn" id="cmd.minp-" onclick="cmd();">Input ▼</button>
+      <button class="pad"></button>
+      <button class="btn" id="irc.mute" onclick="cmd();">Mute</button>
+      <br />
+      <button class="btn" id="irc.preset_config" onclick="cmd();">Pset Cfg</button>
+      <button class="pad"></button>
+      <button class="btn" id="irc.volume-" onclick="cmd();">Vol ▼</button>
+      <br /><br />
+      <button class="btn" id="irc.menu" onclick="cmd();">Menu</button>
+      <button class="btn" id="irc.up" onclick="cmd();">ᐃ</button>
+      <button class="btn" id="irc.home" onclick="cmd();">Home</button>
+      <br />
+      <button class="btn" id="irc.left" onclick="cmd();">ᐊ</button>
+      <button class="btn" id="irc.enter" onclick="cmd();">Enter</button>
+      <button class="btn" id="irc.right" onclick="cmd();">ᐅ</button>
+      <br />
+      <button class="btn" id="irc.profile" onclick="cmd();">Profile</button>
+      <button class="btn" id="irc.down" onclick="cmd();">ᐁ</button>
+      <button class="btn" id="irc.trim" onclick="cmd();">Trim</button>
+      <br /><br />
+      <button class="btn" id="irc.f1" onclick="cmd();">F1</button>
+      <button class="btn" id="irc.f2" onclick="cmd();">F2</button>
+      <button class="btn" id="irc.f3" onclick="cmd();">F3</button>
+      <button class="btn" id="irc.f4" onclick="cmd();">F4</button>
+    </div>
+
+    <!-- ==[ INFO ]======================================================== -->
+    <div id="tab.info" class="tab_view" style="display:none">
+      <textarea rows="31" cols="100" id="ta.info" disabled></textarea>
+      <textarea id="ta.info_tmp" style="display:none;"></textarea>
+    </div>
+
+    <!-- ==[ ERROR ]======================================================= -->
+    <div id="tab.error" class="tab_view" style="display:none">
+      <h1 style="color:white;">Error connecting to server</h1>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
