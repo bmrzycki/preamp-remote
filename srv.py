@@ -13,9 +13,9 @@ from threading import Lock
 from urllib.parse import urlparse
 
 # local imports
-from cmd_ssp800 import request as pa_reqfn
-from cmd_ssp800 import response as pa_rspfn
-from cmd_ssp800 import commands as pa_commands
+from pa_ssp800 import request as pa_reqfn
+from pa_ssp800 import response as pa_rspfn
+from pa_ssp800 import commands as pa_commands
 
 API_PATH = '/1'
 VERBOSE = 0
