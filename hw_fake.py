@@ -1,7 +1,7 @@
 import random
 import time
 
-class Range(object):
+class Range():
     def __init__(self, a, kind='wrap'):
         self.a = a
         self.kind = kind
@@ -56,7 +56,7 @@ _mode_map = { 193: 0,
               211: 10 }
 
 
-class Preamp(object):
+class Preamp():
     def __init__(self, port):
         self.port = port
         # Valid volume levels are off, or -99.0 to 14.0 in steps of 0.5.
@@ -135,18 +135,12 @@ class Preamp(object):
                 self.input.set(num-111)  # input 9-20
             elif num in range(193, 211+1):
                 self.mode.set(_mode_map[num])  # mode 0-18
-        return []
-
-    def _wait(self, cmd):
-        sp = cmd.split()
-        time.sleep(int(sp[1]) / 1000.0)
+        elif cmd.startswith('wait '):
+            time.sleep(int(cmd.split()[1]) / 1000.0)
         return []
 
     def cmd(self, cmd_list):
         a = []
         for c in cmd_list:
-            if c.lower().startswith('wait '):
-                a.append(self._wait(c))
-            else:
-                a.append(self._rsp(c))
+            a.append(self._rsp(c))
         return a
