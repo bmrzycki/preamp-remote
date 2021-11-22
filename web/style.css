@@ -1,4 +1,5 @@
-/* Prevent "scroll bouncing" on iOS:
+/*
+ * Prevent "scroll bouncing" on iOS:
  * https://www.bram.us/2016/05/02/prevent-overscroll-bounce-in-ios-mobilesafari-pure-css/
  * https://www.smashingmagazine.com/2018/08/scroll-bouncing-websites/
  */
@@ -10,11 +11,6 @@ html, body {
 }
 
 body, .pad {
-    background-color: #151515;
-}
-
-.pad {
-    color: #a1a1a1;
     background-color: #151515;
 }
 
@@ -49,7 +45,7 @@ textarea {
     outline: none;
 }
 
-.btn, .pad {
+.btn, .btn_f, .pad {
     padding-left: 15px;
     padding-right: 15px;
     padding-top: 15px;
@@ -57,7 +53,6 @@ textarea {
     margin: 4px;
     border: none;
     text-align: center;
-    width: 100px;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
@@ -65,7 +60,19 @@ textarea {
     outline: none;
 }
 
-.btn {
+.btn, .btn_f {
     color: #e6e6e6;
     background-color: #0000e6;
+}
+
+.btn, .pad {
+    width: 100px;
+}
+
+.btn_f {
+    width: 72px;
+}
+
+.pad {
+    color: #a1a1a1;
 }
