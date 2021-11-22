@@ -25,6 +25,7 @@ outf="$BASE/rel_$REV.tar.gz"
 
 mk_cfg() {
     local dev="$1"
+    echo "# Created on $(date)"
     echo '[net]'
     echo '  name ='
     echo '  port = 8000'
