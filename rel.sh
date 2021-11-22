@@ -45,9 +45,9 @@ mk_run() {
     echo 'BASE=$(cd $(dirname "$0") && pwd)'
     echo
     echo "if [ -e '$dev' ]; then"
-    echo '    "$BASE/srv" -c "$BASE/rel.cfg"'
+    echo '    "$BASE/srv.py" -c "$BASE/rel.cfg"'
     echo 'else'
-    echo '    "$BASE/srv" -c "$BASE/rel-fake.cfg"'
+    echo '    "$BASE/srv.py" -c "$BASE/rel-fake.cfg"'
     echo 'fi'
 }
 
