@@ -1,5 +1,5 @@
-import random
-import time
+from random import choice, randrange
+from time import sleep
 
 class Range():
     def __init__(self, a, kind='wrap'):
@@ -35,27 +35,6 @@ class Range():
                 return
 
 
-_mode_map = { 193: 0,
-              194: 1,
-              195: 2,
-              196: 3,
-              197: 4,
-              198: 5,
-              199: 6,
-              200: 7,
-              201: 8,
-              202: 9,
-              203: 11,
-              204: 12,
-              205: 13,
-              206: 14,
-              207: 15,
-              208: 16,
-              209: 17,
-              210: 17,
-              211: 10 }
-
-
 class Preamp():
     def __init__(self, port):
         self.port = port
@@ -66,6 +45,26 @@ class Preamp():
         self.mute = Range(['off', 'on'])
         self.input = Range(list(range(1, 20+1)))
         self.mode = Range(list(range(0, 18+1)))
+        # irc remote codes -> effect audio mode number (SY MODE xx)
+        self._modes = { 193: 0,
+                        194: 1,
+                        195: 2,
+                        196: 3,
+                        197: 4,
+                        198: 5,
+                        199: 6,
+                        200: 7,
+                        201: 8,
+                        202: 9,
+                        203: 11,
+                        204: 12,
+                        205: 13,
+                        206: 14,
+                        207: 15,
+                        208: 16,
+                        209: 17,
+                        210: 17,  # <- Intentional duplicate, hw tested.
+                        211: 10 }
 
     def _input_name(self, val):
         if val == '1':
@@ -90,19 +89,19 @@ class Preamp():
         if cmd == 'stat mode':
             return [ f"SY MODE {self.mode.val()}" ]
         if cmd == 'stat audio':
-            audio = random.randrange(0, 28 + 1)
-            sr = random.choice([2, 3, 4, 5, 6, 7, 10])
+            audio = randrange(0, 28 + 1)
+            sr = choice([2, 3, 4, 5, 6, 7, 10])
             return [ f"SY AUDIO {audio} {sr}" ]
         if cmd == 'stat video':
-            video = random.randrange(0, 18 + 1)
+            video = randrange(0, 18 + 1)
             return [ f"SY VIDEO {video}" ]
         if cmd == 'stat temp':
-            c = random.randrange(30, 50+1)
+            c = randrange(30, 50+1)
             return [ f"SY TEMP {c}" ]
         if cmd == 'stat vers':
             return  [ 'SY VERS 3.1.0 build 0114' ]
         if cmd == 'stat ac':
-            ac = random.randrange(118, 126 + 1)
+            ac = randrange(118, 126 + 1)
             return [ f"SY AC {ac}" ]
         elif cmd in ('minp+', 'irc 10'):
             self.input.inc()
@@ -134,9 +133,9 @@ class Preamp():
             elif num in range(120, 131+1):
                 self.input.set(num-111)  # input 9-20
             elif num in range(193, 211+1):
-                self.mode.set(_mode_map[num])  # mode 0-18
+                self.mode.set(self._modes[num])  # mode 0-17
         elif cmd.startswith('wait '):
-            time.sleep(int(cmd.split()[1]) / 1000.0)
+            sleep(int(cmd.split()[1]) / 1000.0)
         return []
 
     def cmd(self, cmd_list):
