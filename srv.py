@@ -93,15 +93,14 @@ def setup_hw():
     class HW():
         def __init__(self):
             self.p  = Preamp(_PREAMP['dev'], _PREAMP['baudrate'])
-            self.lp = Lock()
+            self._l = Lock()
 
         def submit(self, cmd_list):
-            a = []
-            self.lp.acquire()
+            self._l.acquire()
             try:
                 a = self.p.cmd(cmd_list)
             finally:
-                self.lp.release()
+                self._l.release()
             return a
 
     global _HW
