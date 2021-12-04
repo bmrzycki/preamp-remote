@@ -3,15 +3,9 @@ from time import sleep
 import serial  # external pyserial 3.0+
 
 class Preamp():
-    def __init__(self, port):
-        # The SSP-800 baud is normally 9600. To change to 115200 use the
-        # service menu:
-        #  1. With the SSP-800 powered on, press and release the MENU
-        #     button on the front of the unit.
-        #  2. On the remote control, press and release the button
-        #     sequence in order: F1, F2, F3, F4.
+    def __init__(self, port, baudrate=9600):
         self._s = serial.Serial(
-            port=port, baudrate=115200, bytesize=serial.EIGHTBITS,
+            port=port, baudrate=baudrate, bytesize=serial.EIGHTBITS,
             parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE,
             xonxoff=False, rtscts=False, dsrdtr=False)
         self._count = { 'stat main'  : 2,

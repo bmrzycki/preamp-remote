@@ -26,7 +26,8 @@ _NET = {
     'port' : 8000,
 }
 _PREAMP = {
-    'dev' : 'fake',  # a fake preamp for testing
+    'dev'      : 'fake',  # a fake preamp for testing
+    'baudrate' : 9600,
 }
 _VERSION = {
     'rev'  : 'unknown',
@@ -80,7 +81,7 @@ def _hostinfo():
     return [ f"SY UPTIME {uptime()}",
              f"SY LOADAVG {loadavg()}",
              f"SY TEMP0 {temp0()}",
-             f"SY TTY {_PREAMP['dev']}" ]
+             f"SY TTY {_PREAMP['dev']} @ {_PREAMP['baudrate']}" ]
 
 
 def setup_hw():
@@ -91,7 +92,7 @@ def setup_hw():
 
     class HW():
         def __init__(self):
-            self.p  = Preamp(_PREAMP['dev'])
+            self.p  = Preamp(_PREAMP['dev'], _PREAMP['baudrate'])
             self.lp = Lock()
 
         def submit(self, cmd_list):
@@ -282,6 +283,8 @@ def main(args_raw):
     _NET['name'] = cfg.get('net', 'name', fallback=_NET['name'])
     _NET['port'] = cfg.getint('net', 'port', fallback=_NET['port'])
     _PREAMP['dev'] = cfg.get('preamp', 'dev', fallback=_PREAMP['dev'])
+    _PREAMP['baudrate'] = cfg.getint('preamp', 'baudrate',
+                                     fallback=_PREAMP['baudrate'])
     _VERSION['rev'] = cfg.get('version', 'rev', fallback=_VERSION['rev'])
     _VERSION['date'] = cfg.get('version', 'date', fallback=_VERSION['date'])
 

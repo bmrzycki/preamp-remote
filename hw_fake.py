@@ -1,7 +1,7 @@
 from random import choice, randrange
 from time import sleep
 
-class Range():
+class _Range():
     def __init__(self, a, kind='wrap'):
         self.a = a
         self.kind = kind
@@ -36,15 +36,15 @@ class Range():
 
 
 class Preamp():
-    def __init__(self, port):
+    def __init__(self, port, baudrate=9600):
         self.port = port
         # Valid volume levels are off, or -99.0 to 14.0 in steps of 0.5.
-        self.vol = Range(
+        self.vol = _Range(
             ['off'] + list(map(lambda x: x/10.0, range(-990, 145, 5))),
             kind='saturate')
-        self.mute = Range(['off', 'on'])
-        self.input = Range(list(range(1, 20+1)))
-        self.mode = Range(list(range(0, 18+1)))
+        self.mute = _Range(['off', 'on'])
+        self.input = _Range(list(range(1, 20+1)))
+        self.mode = _Range(list(range(0, 18+1)))
         # irc remote codes -> effect audio mode number (SY MODE xx)
         self._modes = { 193: 0,
                         194: 1,

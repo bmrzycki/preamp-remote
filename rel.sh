@@ -31,7 +31,8 @@ mk_cfg() {
     echo '  port = 8000'
     echo
     echo '[preamp]'
-    echo "  dev = $dev"
+    echo "  dev      = $dev"
+    echo '  baudrate = 115200'
     echo
     echo '[version]'
     echo "  rev  = $REV"
