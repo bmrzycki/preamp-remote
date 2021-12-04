@@ -67,13 +67,10 @@ class Preamp():
                         211: 10 }
 
     def _input_name(self, val):
-        if val == '1':
-            return 'TV'
-        if val == '2':
-            return 'Bluetooth'
-        if val == '3':
-            return 'HTPC'
-        return f"input {val}"
+        names = { '1' : ' TV',
+                  '2' : ' BT',
+                  '3' : ' HTPC' }
+        return names.get(val, '')
 
     def _rsp(self, cmd):
         # NOTE: we act as if STAT OFF is always enabled.
@@ -84,7 +81,7 @@ class Preamp():
             vol = self.vol.val()
             if vol != 'off' and self.mute.val() == 'on':
                 vol += " muted"
-            return [ f"SY MAIN {inp} {name}",
+            return [ f"SY MAIN {inp}{name}",
                      f"SY VOLR {vol}" ]
         if cmd == 'stat mode':
             return [ f"SY MODE {self.mode.val()}" ]
