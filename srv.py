@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 # local imports
 from pa_ssp800 import request as pa_reqfn
 from pa_ssp800 import response as pa_rspfn
-from pa_ssp800 import commands as pa_commands
+from pa_ssp800 import commands as pa_cmdfn
 
 API_PATH = '/1'
 VERBOSE = 0
@@ -92,15 +92,15 @@ def setup_hw():
 
     class HW():
         def __init__(self):
-            self.p  = Preamp(_PREAMP['dev'], _PREAMP['baudrate'])
-            self._l = Lock()
+            self._pa = Preamp(_PREAMP['dev'], _PREAMP['baudrate'])
+            self._lk = Lock()
 
         def submit(self, cmd_list):
-            self._l.acquire()
+            self._lk.acquire()
             try:
-                a = self.p.cmd(cmd_list)
+                a = self._pa.cmd(cmd_list)
             finally:
-                self._l.release()
+                self._lk.release()
             return a
 
     global _HW
@@ -114,11 +114,12 @@ def setup_web_data():
             url = str(p).partition(str(web_p))[2]
             _DATA[url] = { 'file' : str(p),
                            'type' : guess_type(p)[0] }
-    _DATA['/'] = _DATA['/index.html']
+    _DATA['/']    = _DATA['/index.html']
+    _DATA['/cli'] = _DATA['/cli.py']
 
 
 def setup_desc():
-    for n in pa_commands():
+    for n in pa_cmdfn():
         _DESC[n['name']] = { 'desc' : n['desc'], 'p1' : n['p1'] }
     # Extend stat command with meta-commands handled in this server.
     _DESC['stat']['p1']['swvers'] = 'Request software version information.'
@@ -126,41 +127,32 @@ def setup_desc():
 
 
 class DeviceCmd():
-    def __init__(self, cmd, reqfn=None, rspfn=None):
-        self.cmd = self.raw = cmd
-        self.rsps = []
-        self.raw_rsps = []
-        def _nop(s):
-            return True, s
-        self.reqfn = self.rspfn = _nop
-        if reqfn is not None:
-            self.reqfn = reqfn
-        if rspfn is not None:
-            self.rspfn = rspfn
-        self.ok, ret = self.reqfn(self.cmd)
+    def __init__(self, cmd):
+        self.cmd = cmd
+        self.rsps, self.raw_rsps = [], []
+        self.ok, raw = pa_reqfn(cmd)
         if self.ok:
-            self.raw = ret
+            self.raw = raw
         else:
-            self.rsps.append(ret)
+            self.raw = cmd
+            self.rsps.append(raw)
 
     def responses(self, raw_rsps):
         self.raw_rsps = raw_rsps
         for r in raw_rsps:
-            ok, rsp = self.rspfn(r)
+            ok, rsp = pa_rspfn(r)
             if self.ok and not ok:
                 self.ok = False
             self.rsps.append(rsp)
 
 
 class DeviceData():
-    def __init__(self, subfn, reqfn=None, rspfn=None):
+    def __init__(self, subfn):
         self.subfn = subfn
-        self.reqfn = reqfn
-        self.rspfn = rspfn
         self.data = []
 
     def add(self, cmd):
-        self.data.append(DeviceCmd(cmd, self.reqfn, self.rspfn))
+        self.data.append(DeviceCmd(cmd))
 
     def submit(self):
         all_raws, next_i = [], deque()
@@ -203,30 +195,27 @@ class Srv(BaseHTTPRequestHandler):
             self.send_error(400, 'No requests received')
             return
 
-        def _el(request, responses, req_raw=''):
-            if not req_raw:
-                req_raw = request
+        def _dict(request, req_raw, responses):
             return { 'request'   : request,
-                     'responses' : responses,
-                     'req_raw'   : req_raw }
+                     'req_raw'   : req_raw,
+                     'responses' : responses }
 
-        dd_pa = DeviceData(_HW.submit, reqfn=pa_reqfn, rspfn=pa_rspfn)
-        rsps = []
+        dd_pa, rsps = DeviceData(_HW.submit), []
         for r in reqs:
             r = str(r).lower()
             if r == 'stat swvers':
-                v = f"{_VERSION['rev']}"
+                v = f"SY SWVERS {_VERSION['rev']}"
                 if _VERSION['date']:
                     v += f" ({_VERSION['date']})"
-                rsps.append(_el(r, [f"SY SWVERS {v}"]))
+                rsps.append(_dict(r, r, [v]))
             elif r == 'stat hostinfo':
-                rsps.append(_el(r, _hostinfo()))
+                rsps.append(_dict(r, r, _hostinfo()))
             else:
                 dd_pa.add(r)
 
         dd_pa.submit()
         for d in dd_pa.data:
-            rsps.append(_el(d.cmd, d.rsps, req_raw=d.raw))
+            rsps.append(_dict(d.cmd, d.raw, d.rsps))
         self._rsp_json(rsps)
 
     def do_GET(self):
@@ -234,11 +223,11 @@ class Srv(BaseHTTPRequestHandler):
         if u.path == '/commands':
             self._rsp_json(_DESC)
             return
-        f = _DATA.get(u.path, None)
-        if f is None:
+        f = _DATA.get(u.path, {})
+        if f:
+            self._rsp_file(f['file'], f['type'])
+        else:
             self.send_error(404)
-            return
-        self._rsp_file(f['file'], f['type'])
 
     def do_POST(self):
         if self.path != API_PATH:
@@ -251,10 +240,10 @@ class Srv(BaseHTTPRequestHandler):
         except Exception as e:
             self.send_error(400, f"Bad JSON ({e}): {raw}")
             return
-        if not isinstance(q, list):
-            self.send_error(400, f"JSON must be a list: {q}")
-            return
-        self._reqs(q)
+        if isinstance(q, list):
+            self._reqs(q)
+        else:
+            self.send_error(400, f"JSON input must be a list: {q}")
 
 
 def main(args_raw):
