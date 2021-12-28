@@ -18,7 +18,7 @@ class Preamp():
         self.cmd(["stat off"])
 
     def _write(self, data, timeout=0.2):
-        _ = self._read(self._s.in_waiting, 0.0)  # Purge any buffered foo.
+        self._s.read(self._s.in_waiting)  # Purge stale responses
         self._s.write_timeout = timeout
         try:
             count = self._s.write(bytes(data + '\n', 'ascii'))
