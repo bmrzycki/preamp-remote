@@ -17,18 +17,20 @@ _DOTFILE = """
   port = {port}
 """[1:]
 
+_DOTFILE_P = Path.home().joinpath('.preamp_remote')
+
 class Client(object):
     def __init__(self, name, port):
         self.name = name
         self.port = port
 
-    def fetch(self, cmd_list):
+    def fetch(self, cmd_list, timeout=5.0):
         u = Request(
             url=f'http://{self.name}:{self.port}/1',
             data=dumps(cmd_list).encode('utf-8'),
             headers={ 'Content-Type' : 'application/json' })
         try:
-            fh = urlopen(u, timeout=5.0)
+            fh = urlopen(u, timeout=timeout)
         except Exception as e:
             try:
                 err = e.reason
@@ -93,6 +95,16 @@ def desc_pretty(d, out_s):
                 out_s.write(f" = {p1[p1_el]}\n")
 
 
+def get_cfg(p=_DOTFILE_P):
+    d = { 'name' : '127.0.0.1', 'port' : 8000 }
+    if p.is_file():
+        cfg = ConfigParser()
+        cfg.read(p)
+        d['name'] = cfg.get('server', 'name', fallback=d['name'])
+        d['port'] = cfg.getint('server', 'port', fallback=d['port'])
+    return d
+
+
 def main(args_raw, out_s, err_s):
     def err(s, rc=1, indent=''):
         err_s.write(f"{indent}error: {s}\n")
@@ -101,23 +113,16 @@ def main(args_raw, out_s, err_s):
     def out(s):
         out_s.write(f"{s}\n")
 
-    name, port = '127.0.0.1', 8000
-    cfg_p = Path.home().joinpath('.preamp_remote')
-    if cfg_p.is_file():
-        cfg = ConfigParser()
-        cfg.read(cfg_p)
-        name = cfg.get('server', 'name', fallback=name)
-        port = cfg.getint('server', 'port', fallback=port)
-
+    cfg_d = get_cfg()
     p = argparse.ArgumentParser(
         description='Preamp remote command line client',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    p.add_argument('--name', default=name,
+    p.add_argument('--name', default=cfg_d['name'],
                    help='REST http hostname/ip')
-    p.add_argument('--port', type=int, default=port,
+    p.add_argument('--port', type=int, default=cfg_d['port'],
                    help='REST http port')
     p.add_argument('--dotfile', default=False, action='store_true',
-                   help=f'auto-generate dotfile {cfg_p}')
+                   help=f'auto-generate dotfile {_DOTFILE_P}')
     p.add_argument('-d', '--debug', default=False, action='store_true',
                    help='enable debug mode')
     p.add_argument('-l', '--list', default=False, action='store_true',
@@ -132,9 +137,9 @@ def main(args_raw, out_s, err_s):
     cl = Client(args.name, args.port)
 
     if args.dotfile:
-        if cfg_p.is_file():
-            return err(f"file exists {cfg_p}")
-        with open(cfg_p, 'w') as f:
+        if _DOTFILE_P.is_file():
+            return err(f"file exists {_DOTFILE_P}")
+        with open(_DOTFILE_P, 'w') as f:
             f.write(_DOTFILE.format(name=args.name, port=args.port))
         return 0
 

@@ -6,7 +6,7 @@ NAME=$(basename "$BASE")
 
 if [[ $1 = clean ]]; then
     (cd "$BASE" && \
-	 rm -f rel_*.tar.gz rel*.cfg run.sh)
+	 rm -f rel_*.tar.gz rel*.cfg run.sh run_dial.sh)
     exit 0
 fi
 
@@ -52,16 +52,26 @@ mk_run() {
     echo 'fi'
 }
 
+mk_run_dial() {
+    echo '#!/bin/sh'
+    echo
+    echo 'BASE=$(cd $(dirname "$0") && pwd)'
+    echo
+    echo '(cd "$BASE" && ./dial.py)'
+}
+
 mk_cfg /dev/ttyUSB0 > "$BASE/rel.cfg"
 mk_cfg fake         > "$BASE/rel-fake.cfg"
 mk_run /dev/ttyUSB0 > "$BASE/run.sh"
-chmod 755 "$BASE/run.sh"
+mk_run_dial         > "$BASE/run_dial.sh"
+chmod 755 "$BASE/run.sh" "$BASE/run_dial.sh"
 
 tmpf="$(mktemp)"
 (cd "$BASE/.." && \
      tar -zcf "$tmpf" \
 	 "$NAME"/*.py \
 	 "$NAME"/run.sh \
+	 "$NAME"/run_dial.sh \
 	 "$NAME"/*.cfg \
 	 "$NAME"/web \
 	 "$NAME"/serial)
