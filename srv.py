@@ -4,10 +4,11 @@ import argparse
 
 from collections import deque
 from configparser import ConfigParser
-from mimetypes import guess_type
 from pathlib import Path
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from json import dumps, loads
+from mimetypes import guess_type
+from multiprocessing import cpu_count
 from sys import argv
 from threading import Lock
 from urllib.parse import urlparse
@@ -65,7 +66,7 @@ def _hostinfo():
         p = Path('/proc/loadavg')
         if p.is_file():
             with open(p) as f:
-                v = float(f.readline().split()[0]) * 100.0
+                v = float(f.readline().split()[0]) / cpu_count() * 100.0
                 value = f"{v:.1f}%"
         return value
 
