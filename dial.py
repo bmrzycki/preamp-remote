@@ -12,13 +12,19 @@ import evdev  # pip install --user evdev
 from cli import Client, get_cfg  # local import
 
 # Initial setup
+#
 # Hold button on bottom of dial for 5 seconds until light blinks.
 #   root # bluetoothctl
 #   [bluetoothctl] agent on
 #   [bluetoothctl] default-agent
+#
+# Search for string "Surface Dial" to find its MAC.
 #   [bluetoothctl] scan on
-# Search for MAC for "Surface Dial".
-#   [bluetoothctl] pair SURFACE_MAC
+#
+# Pair to the Surface Dial's MAC
+#   [bluetoothctl] pair MAC
+#
+# (First time to double-check, Linux auto-pairs on reboots)
 #   [bluetoothctl] connect SURFACE_MAC
 
 VERBOSE = 0
@@ -99,6 +105,7 @@ class Handler():
 
         if self._ts_btn:
             return  # Discard all dial rotations while pressed.
+
         if (event.type == evdev.ecodes.EV_REL and
             event.code == evdev.ecodes.REL_DIAL):
                 try:
