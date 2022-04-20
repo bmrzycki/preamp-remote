@@ -138,6 +138,8 @@ function cmd() {
 
     if (kind === "irc") {
 	cmd = `${kind} ${name}`;
+    } else if (kind === "panic") {
+	cmd = "vola 1";
     } else if (kind === "pd") {
 	let val = event.target.value;
 	cmd = mapIR[name][val] ? `irc ${mapIR[name][val]}` : "";
