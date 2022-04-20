@@ -25,7 +25,7 @@ from cli import Client, get_cfg  # local import
 #   [bluetoothctl] pair MAC
 #
 # (First time to double-check, Linux auto-pairs on reboots)
-#   [bluetoothctl] connect SURFACE_MAC
+#   [bluetoothctl] connect MAC
 
 VERBOSE = 0
 
