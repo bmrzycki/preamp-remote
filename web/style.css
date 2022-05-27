@@ -50,13 +50,13 @@ textarea {
     padding-right: 15px;
     padding-top: 15px;
     padding-bottom: 15px;
-    margin: 4px;
+    margin: 3px;
     border: none;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
-    border-radius: 8px;
+    border-radius: 6px;
     outline: none;
 }
 
