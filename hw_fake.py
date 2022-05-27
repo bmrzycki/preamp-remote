@@ -69,7 +69,8 @@ class Preamp():
     def _input_name(self, val):
         names = { '1' : ' TV',
                   '2' : ' BT',
-                  '3' : ' HTPC' }
+                  '3' : ' HTPC',
+                  '4' : ' DAC' }
         return names.get(val, '')
 
     def _rsp(self, cmd):
